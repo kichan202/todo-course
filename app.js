@@ -7,7 +7,8 @@ const filterOption = document.querySelector('.filter-todo');
 //event listners
 todoButton.addEventListener('click', addTodo);
 todoList.addEventListener('click', deleteCheck);
-filterOption.addEventListener('click', filterTodo);
+//change from 'click' to 'change'
+filterOption.addEventListener('change', filterTodo);
 
 //functions
 function addTodo(event){
@@ -21,6 +22,8 @@ function addTodo(event){
     newTodo.innerHTML=todoInput.value;
     newTodo.classList.add('todo-item');
     todoDiv.appendChild(newTodo)
+    //Save to local storage
+    saveLocalTodos(todoInput.value)
 
     //Check MArk Button
     const completedButton = document.createElement('button');
@@ -62,14 +65,46 @@ function deleteCheck(event){
     }
 }
 
+
+/**
+ * 
+ * https://stackoverflow.com/questions/64469842/complete-and-uncompleted-todos 
+ */
 function filterTodo(event){
-    const todos = todoList.childNodes;
-    todos.forEach(function(todo){
+    const todos = [...todoList.children];
+    todos.forEach(function(todo, index){
         switch(event.target.value){
             case "all":
                 todo.style.display = "flex";
                 break;
+            case "completed":
+                if(todo.classList.contains("completed")){
+                    todo.style.display = "flex";
+                }else{
+                    todo.style.display = "none";
+                }
+                break;
+            case "uncompleted":
+                if(!todo.classList.contains("completed")){
+                    todo.style.display = "flex";
+                }else{
+                    todo.style.display = "none";
+                }
+                break;
         }
+
     });
 
+}
+
+function saveLocalTodos(todo){
+    //Check -- hey Do i already have a key todos in there?
+    let todos;
+    if(localStorage.getItem("todos") === null){
+        todos = [];
+    }else{
+        todos = JSON.parse(localStorage.getItem("todos"))
+    }
+    todos.push(todo);
+    localStorage.setItem("todos", JSON.stringify(todos));
 }
